@@ -24,3 +24,5 @@ The idea of having a client config in these modules is so the api key, network o
 
 Note that what's in here doesn't need to be delivered in the same way, we put this here for you to have something to start quicker but it can be tweaked in whatever way you want if you feel it works better in a different way, we'll be more than happy to see that.
 
+The HTTP client on `config.exs` is missing on purpose. The project won't compile without this, if you want it to compile even with warnings, remove the `elixirc_options` key in `mix.exs`.
+
