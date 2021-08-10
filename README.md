@@ -12,3 +12,5 @@ Both clients already are wired. You do need to build everything around that to m
 
 You can run a `ngrok http 4000` to make the webhook on Blocknative work. Note that locally the path will be `localhost:4000/blocknative/confirm`.
 
+In the same config file the `:username` key needs to be set for the app to launch.
+
