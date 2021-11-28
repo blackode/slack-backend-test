@@ -24,7 +24,7 @@ defmodule Vhs.Router do
 
     case Blocknative.watch_tx(body_params) do
       {:ok, _} ->
-        Transaction.register(hash, "registered")
+        Transaction.register(hash, "pending")
 
         conn
         |> put_resp_content_type("application/json")

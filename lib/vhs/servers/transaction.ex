@@ -43,8 +43,10 @@ defmodule Vhs.Servers.Transaction do
 
   @impl true
   def handle_info({:notify_slack, hash}, state) do
-    if state[hash] != "confirmed" do
-      notify_slack(hash, state[hash])
+    hash_status = state[hash]
+    # notify slack only if hash_status is not "confirmed" 
+    if hash_status != "confirmed" do
+      notify_slack(hash, hash_status)
     end
 
     {:noreply, state}
@@ -53,8 +55,9 @@ defmodule Vhs.Servers.Transaction do
   @impl true
   def handle_call({:register, hash, status}, _from, state) do
     schedule_work(hash)
-    state = Map.put(state, hash, status)
-    {:reply, {:ok, hash}, state}
+    notify_slack(hash, status)
+    new_state = Map.put(state, hash, status)
+    {:reply, {:ok, hash}, new_state}
   end
 
   @impl true

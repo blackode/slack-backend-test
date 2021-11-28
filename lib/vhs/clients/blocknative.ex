@@ -30,7 +30,7 @@ defmodule Vhs.Clients.Blocknative do
     post("/transaction", body)
     |> case do
       {:ok, %{body: %{"msg" => "success"}} = response} ->
-        {:ok, _hash} = Transaction.register(body["hash"], "register")
+        {:ok, _hash} = Transaction.register(body["hash"], "registered")
         {:ok, response}
 
       {:error, error} ->
