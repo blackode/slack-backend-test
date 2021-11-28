@@ -24,7 +24,7 @@ defmodule Vhs.Router do
 
     case Blocknative.watch_tx(body_params) do
       {:ok, _} ->
-        Transaction.register(hash, "initiated")
+        Transaction.register(hash, "registered")
 
         conn
         |> put_resp_content_type("application/json")
@@ -32,12 +32,45 @@ defmodule Vhs.Router do
         |> send_resp()
 
       {:error, _error} ->
-        # This is logged on Slack's client
         conn
         |> put_resp_content_type("application/json")
         |> resp(422, Jason.encode!(%{error: "there was an error posting to slack"}))
         |> send_resp()
     end
+  end
+
+  get "/blocknative/transactions/pending" do
+    case Transaction.get_pending_transactions() do
+      {:ok, pending_transactions} ->
+        transactions =
+          Enum.map(pending_transactions, fn {hash, status} ->
+            %{
+              hash: hash,
+              status: status
+            }
+          end)
+
+        conn
+        |> put_resp_content_type("application/json")
+        |> resp(200, Jason.encode!(%{status: "ok", data: transactions}))
+        |> send_resp()
+
+      {:error, _error} ->
+        conn
+        |> put_resp_content_type("application/json")
+        |> resp(422, Jason.encode!(%{error: "there was an error fetching  pending transactions"}))
+        |> send_resp()
+    end
+  end
+
+  post "/blocknative/webhook" do
+    body_params = conn.body_params
+    Transaction.update_status(body_params)
+
+    conn
+    |> put_resp_content_type("application/json")
+    |> resp(200, Jason.encode!(%{status: "ok"}))
+    |> send_resp()
   end
 
   match _ do

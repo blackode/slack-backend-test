@@ -3,7 +3,7 @@ import Config
 # Set the `:username` config value here with your Name or Github handler.
 config :vhs,
   blocknative: %{
-    api_key: "ce462da8-5ca8-46e3-bfc7-250569c9c893",
+    api_key: "09119304-c8e3-4231-bd48-24aa5fefcb5d",
     blockchain: "ethereum",
     network: "main",
     base_url: "https://api.blocknative.com"

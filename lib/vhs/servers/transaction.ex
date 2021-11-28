@@ -5,14 +5,28 @@ defmodule Vhs.Servers.Transaction do
   alias __MODULE__
 
   # Client API
+  @doc """
+  Update the status for the given hash
+  """
+  def update_status(%{"hash" => hash, "status" => status}) do
+    update_status(hash, status)
+  end
+
   def update_status(hash, status) do
     GenServer.cast(Transaction, {:update_status, hash, status})
   end
 
+  @doc """
+  Register the hash with state "intiated" or "pending" and gets updated
+  from webhook url POST /blocknative/webhook
+  """
   def register(hash, status \\ "pending") do
     GenServer.call(Transaction, {:register, hash, status})
   end
 
+  @doc """
+  List the all pending transactions where the status is not "confirmed"
+  """
   def get_pending_transactions() do
     GenServer.call(Transaction, :pending_transactions)
   end
@@ -24,8 +38,6 @@ defmodule Vhs.Servers.Transaction do
   # Server API
   @impl true
   def init(state) do
-    IO.inspect(state, label: "---------- initial state ----------")
-
     {:ok, state}
   end
 
@@ -47,13 +59,13 @@ defmodule Vhs.Servers.Transaction do
 
   @impl true
   def handle_call(:pending_transactions, _from, state) do
-    pending_transactions = Enum.filter(state, &is_pending_transaction(&1, state))
+    pending_transactions = Enum.filter(state, &is_pending_transaction/1)
 
-    {:reply, pending_transactions, state}
+    {:reply, {:ok, pending_transactions}, state}
   end
 
   @impl true
-  def handle_cast({:update_status, %{hash: hash, status: status}}, state) do
+  def handle_cast({:update_status, hash, status}, state) do
     new_state = %{state | hash => status}
     notify_slack(hash, status)
     {:noreply, new_state}
@@ -64,8 +76,8 @@ defmodule Vhs.Servers.Transaction do
     Process.send_after(self(), {:notify_slack, hash}, :timer.minutes(2))
   end
 
-  defp is_pending_transaction(hash, state) do
-    state[hash] == "pending"
+  defp is_pending_transaction({_hash, status}) do
+    status != "confirmed"
   end
 
   defp notify_slack(hash, status) do

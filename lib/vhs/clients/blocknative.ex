@@ -11,6 +11,7 @@ defmodule Vhs.Clients.Blocknative do
   @behaviour Vhs.Behaviors.BlocknativeClient
 
   @client_config Application.compile_env!(:vhs, :blocknative)
+  alias Vhs.Servers.Transaction
 
   plug(Tesla.Middleware.BaseUrl, @client_config.base_url)
   plug(Tesla.Middleware.JSON, engine: Jason)
@@ -28,9 +29,8 @@ defmodule Vhs.Clients.Blocknative do
 
     post("/transaction", body)
     |> case do
-      {:ok, response} ->
-        IO.inspect(response, label: "---------- the response ----------")
-
+      {:ok, %{body: %{"msg" => "success"}} = response} ->
+        {:ok, _hash} = Transaction.register(body["hash"], "register")
         {:ok, response}
 
       {:error, error} ->
