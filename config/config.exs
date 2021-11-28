@@ -13,3 +13,5 @@ config :vhs,
     webhook_key: "T87C7C78R/B02NH1WEVLM/Z8weGMtwWW8CsVPrSxDRi1YB"
   },
   username: "blackode"
+
+config :tesla, :adapter, Tesla.Adapter.Gun

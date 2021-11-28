@@ -1,7 +1,8 @@
 defmodule Vhs.Clients.Blocknative do
+  use Tesla, only: [:post], docs: false
+
   @moduledoc """
   Interface to communicate with Blocknative's API
-
   Ideally the client_config will return api keys, network, etc...
   """
 
@@ -11,10 +12,25 @@ defmodule Vhs.Clients.Blocknative do
 
   @client_config Application.compile_env!(:vhs, :blocknative)
 
+  plug(Tesla.Middleware.BaseUrl, @client_config.base_url)
+  plug(Tesla.Middleware.JSON, engine: Jason)
+  plug(Tesla.Middleware.Query, [])
+
   @impl true
   def watch_tx(body) do
-    case Vhs.HTTP.post("/transaction", body, @client_config) do
+    default_body = %{
+      "apiKey" => @client_config.api_key,
+      "network" => @client_config.network,
+      "blockchain" => @client_config.blockchain
+    }
+
+    body = Map.merge(default_body, body)
+
+    post("/transaction", body)
+    |> case do
       {:ok, response} ->
+        IO.inspect(response, label: "---------- the response ----------")
+
         {:ok, response}
 
       {:error, error} ->
