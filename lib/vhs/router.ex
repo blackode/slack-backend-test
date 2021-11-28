@@ -7,7 +7,8 @@ defmodule Vhs.Router do
 
   require Logger
 
-  alias Vhs.Clients.Slack
+  alias Vhs.Clients.Blocknative
+  alias Vhs.Servers.Transaction
 
   plug(Plug.Logger)
   plug(:match)
@@ -15,10 +16,16 @@ defmodule Vhs.Router do
   plug(:dispatch)
 
   post "/blocknative/confirm" do
-    Logger.info("#{conn.body_params["hash"]} got mined")
+    body_params = conn.body_params
+    hash = body_params["hash"]
+    hashes = List.wrap(hash)
 
-    case Slack.webhook_post(conn.body_params) do
+    Logger.info("#{inspect(hashes)} got to register")
+
+    case Blocknative.watch_tx(body_params) do
       {:ok, _} ->
+        Transaction.register(hash, "initiated")
+
         conn
         |> put_resp_content_type("application/json")
         |> resp(200, Jason.encode!(%{status: "ok"}))
