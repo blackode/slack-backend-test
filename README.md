@@ -33,10 +33,19 @@ Built with: Elixir 1.11.4 and OTP 21.3
 ## API EndPoints
 
 - POST `/blocknative/confirm` to watch transaction hash
+  
+  ```json
+   // Request body params to be sent
+   { 
+      "hash": "0x51d49ccc52e0d00941f86a1bd67e020162a6e1041b4e904ecdae03ebf0f1a907"
+   }
+  ```
 - POST `/blocknative/webhook` webhook url to receive transaction updates
 - POST `/blocknative/transactions/pending` to list the all pending transactions
 
-  ```json{
+  ```json
+  // response
+  {
     "data": [
         {
             "hash": "0x51d49ccc52e0d00941f86a1bd67e020162a6e1041b4e904ecdae03ebf0f1a907",
