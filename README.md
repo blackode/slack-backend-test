@@ -2,11 +2,13 @@
 
 ![Project Out Line Image](vhs.png)
 
+
+
 ## Project Highlighted Module
 
 ### Vhs.Servers.Transaction
 
-This module simulates a Transaction Server for registering, updating and listing transactions using `GenServer`
+This module simulates a Transaction Server for registering, updating, notifying slack, and listing transactions using `GenServer`
 
 It will start as soon as our `vhs` app started
 
@@ -26,16 +28,7 @@ Built with: Elixir 1.11.4 and OTP 21.3
 
 ```
 
-## Starting Application
 
-To start the server:
-
-- Install dependencies with `mix deps.get`
-- Create and migrate your database with `mix ecto.setup`
-- Install Node.js dependencies with `npm install` inside the `assets` directory
-- Start Phoenix endpoint with `mix phx.server`
-
-Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
 ## API EndPoints
 
@@ -53,6 +46,77 @@ Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
     "status": "ok"
   }
   ```
+
+
+
+# Running Application
+
+
+
+## 1. Docker Setup & Running
+
+Add `.env` file with following environment variables
+
+```shell
+BLOCKNATIVE_API_KEY="<key>"
+SLACK_WEBHOOK_KEY=""
+```
+
+After that just build and run using the following commands
+
+```
+docker build -t vhs .
+docker run -t vhs
+```
+
+By default visit `172.17.0.2:4000/blocknative/transactions/pending` 
+
+
+
+## 2. Running Local
+
+#### 2.1) mix release vhs
+
+```
+mix deps.get
+mix release vhs
+```
+
+I added the releases path to `./releases` 
+
+So, we are provided with following commands.
+
+```
+Release created at releases!
+
+    # To start your system
+    releases/bin/vhs start
+
+Once the release is running:
+
+    # To connect to it remotely
+    releases/bin/vhs remote
+
+    # To stop it gracefully (you may also send SIGINT/SIGTERM)
+    releases/bin/vhs stop
+
+To list all commands:
+
+    releases/bin/vhs
+
+```
+
+visit `localhost:4000/blocknative/transactions/pending` 
+
+
+
+#### 2.2) iex -S mix
+
+Running Interactively
+
+
+
+# Receiving Transaction Updates as Webhooks
 
 ## Expose a local web server to the internet
 
@@ -85,10 +149,12 @@ Make sure you add `http://14fc-136-185-52-176.ngrok.io/blocknative/webhook` as w
 
 - API Integration (Blocknative) Implementation
 - Transaction Server callbacks for updating the transaction status.
+- Using docker to releases with Elixir.
 
 ## TIL
 
 - Learned how to use localhost web server as `webhook` using `ngrok`
+- Docker setup for Elixir projects with releases
 
 ## Overall Project Experience
 
@@ -96,7 +162,7 @@ I felt it is a well framed to test core concepts of Elixir as project made me to
 
 ## What I enjoyed?
 
-I really enjoyed coding webhooks and notifying over slack.
+I really enjoyed coding webhooks, playing with docker, and notifying over slack.
 
 Thank You :)
 
