@@ -7,8 +7,6 @@ defmodule Vhs.Application do
 
   @impl true
   def start(_type, _args) do
-    ets_tables()
-
     children = [
       {Plug.Cowboy, scheme: :http, plug: Vhs.Router, options: [port: 4000]},
       Vhs.Servers.Transaction
@@ -18,9 +16,5 @@ defmodule Vhs.Application do
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Vhs.Supervisor]
     Supervisor.start_link(children, opts)
-  end
-
-  defp ets_tables() do
-    :ets.new(:pending_transactions, [:set, :public, :named_table])
   end
 end
