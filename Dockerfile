@@ -1,5 +1,5 @@
 #Build Stage
-FROM bitwalker/alpine-elixir:latest as build
+FROM bitwalker/alpine-elixir:latest AS release_stage
 
 #Copy the source folder into the Docker image
 COPY . .
@@ -9,22 +9,22 @@ RUN export MIX_ENV=prod && \
     rm -Rf _build && \
     mix local.rebar --force && \
     mix deps.get && \
-    mix release
+    mix release vhs
 
 #Deployment Stage
-FROM pentacent/alpine-erlang-base:latest
+FROM bitwalker/alpine-elixir:latest AS run_stage
 
 #Set environment variables and expose port
 EXPOSE 4000
 ENV REPLACE_OS_VARS=true \
     PORT=4000
 
-COPY releases .
+COPY --from=release_stage $HOME/releases .
+RUN chown -R default: ./bin
 
 #Change user
 USER default
 
 #Set default entrypoint and command
-ENTRYPOINT ["./_build/dev/res/vhs/bin/vhs"]
-CMD ["start"]
+CMD ["./bin/vhs", "start"]
 

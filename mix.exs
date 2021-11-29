@@ -39,7 +39,7 @@ defmodule Vhs.MixProject do
       vhs: [
         include_executables_for: [:unix],
         applications: [runtime_tools: :permanent],
-        path: "releases"
+        path: "./releases"
       ]
     ]
   end
