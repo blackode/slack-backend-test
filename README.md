@@ -1,4 +1,4 @@
-# Welcome VHS
+# Welcome Slack Notifications
 
 ![Project Out Line Image](vhs.png)
 
